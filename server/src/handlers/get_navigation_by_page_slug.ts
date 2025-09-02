@@ -1,8 +1,21 @@
+import { db } from '../db';
+import { navigationItemsTable } from '../db/schema';
 import { type GetNavigationByPageSlugInput, type NavigationItem } from '../schema';
+import { eq, asc } from 'drizzle-orm';
 
 export const getNavigationByPageSlug = async (input: GetNavigationByPageSlugInput): Promise<NavigationItem[]> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching navigation items for a specific page's sidebar.
-    // Should return navigation items ordered by the 'order' field, with proper parent/child hierarchy.
-    return [];
+  try {
+    // Fetch navigation items for the specified page slug, ordered by the 'order' field
+    const results = await db.select()
+      .from(navigationItemsTable)
+      .where(eq(navigationItemsTable.page_slug, input.page_slug))
+      .orderBy(asc(navigationItemsTable.order))
+      .execute();
+
+    // Return the results directly as they match the NavigationItem type
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch navigation items:', error);
+    throw error;
+  }
 };

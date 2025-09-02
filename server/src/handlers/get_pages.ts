@@ -1,15 +1,33 @@
+import { db } from '../db';
+import { pagesTable } from '../db/schema';
 import { type Page } from '../schema';
+import { eq, asc } from 'drizzle-orm';
 
 export const getPages = async (): Promise<Page[]> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching all pages from the database.
-    // Should return only published pages ordered by creation date or title.
-    return [];
+  try {
+    const results = await db.select()
+      .from(pagesTable)
+      .orderBy(asc(pagesTable.title))
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch pages:', error);
+    throw error;
+  }
 };
 
 export const getPublishedPages = async (): Promise<Page[]> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching only published pages.
-    // Should filter pages where is_published = true and return them ordered appropriately.
-    return [];
+  try {
+    const results = await db.select()
+      .from(pagesTable)
+      .where(eq(pagesTable.is_published, true))
+      .orderBy(asc(pagesTable.title))
+      .execute();
+
+    return results;
+  } catch (error) {
+    console.error('Failed to fetch published pages:', error);
+    throw error;
+  }
 };

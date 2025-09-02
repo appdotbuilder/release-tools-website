@@ -1,8 +1,29 @@
+import { db } from '../db';
+import { projectsTable } from '../db/schema';
 import { type GetProjectBySlugInput, type Project } from '../schema';
+import { eq } from 'drizzle-orm';
 
 export const getProjectBySlug = async (input: GetProjectBySlugInput): Promise<Project | null> => {
-    // This is a placeholder declaration! Real code should be implemented here.
-    // The goal of this handler is fetching a specific project by its slug (e.g., "mutex", "cli").
-    // Should return null if no project is found with the given slug.
-    return Promise.resolve(null);
+  try {
+    // Query for project with the given slug
+    const results = await db.select()
+      .from(projectsTable)
+      .where(eq(projectsTable.slug, input.slug))
+      .limit(1)
+      .execute();
+
+    // Return null if no project found
+    if (results.length === 0) {
+      return null;
+    }
+
+    // Return the found project
+    const project = results[0];
+    return {
+      ...project
+    };
+  } catch (error) {
+    console.error('Failed to get project by slug:', error);
+    throw error;
+  }
 };
